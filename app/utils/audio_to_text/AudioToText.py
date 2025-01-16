@@ -1,4 +1,5 @@
 import whisper
+from datetime import date
 from pydub import AudioSegment
 import os
 
@@ -68,7 +69,8 @@ class AudioToText():
     
     # Print the transcription
     def print_audio_transcription(self) -> str:
-        with open(f'{os.getcwd()}\\utils\\audio_to_text\\transcript.txt', 'w',encoding='utf-8') as file: 
+        today = date.today()
+        with open(f'{os.getcwd()}\\utils\\audio_to_text\\transcripts\\transcript_{today}.txt', 'w',encoding='utf-8') as file: 
             transcript_text = ' '.join(self.transcript)
             file.write(transcript_text) 
         self.delete_files_in_folder()

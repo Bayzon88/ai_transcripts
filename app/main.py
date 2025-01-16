@@ -37,8 +37,8 @@ def generate_transcript_summary(transcript='') -> str:
 
 get_audio_from_video()
 transcript = get_transcript()
-response = generate_transcript_summary(transcript=transcript)
-print(response.content)
+# response = generate_transcript_summary(transcript=transcript)
+# print(response.content)
 
 
 
