@@ -27,6 +27,7 @@ openai-whisper @ git+https://github.com/openai/whisper.git@90db0de1896c23cbfaf0c
 orjson==3.10.12
 packaging==24.2
 pillow==10.2.0
+psycopg2==2.9.10
 pydantic==2.10.4
 pydantic_core==2.27.2
 pydub==0.25.1
