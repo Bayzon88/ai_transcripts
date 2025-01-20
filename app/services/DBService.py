@@ -9,6 +9,9 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_core.documents import Document
 from langchain_postgres import PGVector
 from langchain_postgres.vectorstores import PGVector
+from langchain_community.document_loaders import TextLoader
+
+from EmbeddingService import EmbeddingService
 
 load_dotenv()
 
@@ -19,6 +22,15 @@ class DBService:
     database:str = os.getenv('database')
     user:str = os.getenv('user')
     password:str = os.getenv('password')
+    connection: str = f'''postgresql+psycopg://{user}:{password}@{host}:5432/{database}'''  
+    collection_name : str = "my_docs"
+    ollamaEmbeddings = OllamaEmbeddings(model=os.getenv('embedding_model'))
+    text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=100,
+            length_function=len,
+            is_separator_regex=False
+        )
     
     def create_db_connection(self):
         print(os.getenv('host'))
@@ -37,44 +49,29 @@ class DBService:
     def close_db_connection(self,cursor, conn):
         cursor.close()
         conn.close()
+       
     
-    def execute_similarity_search(self, ):
-        print('Executing Similarity Search')
-    
-    
-    def insert_embeddings_in_database(self,embeddings: List[List[float]]):
-        connection = f'''postgresql+psycopg://{self.user}:{self.password}@{self.host}:5432/{self.database}'''  # Uses psycopg3!
-        collection_name = "my_docs"
-
-        embedding = OllamaEmbeddings(model=os.getenv('embedding_model'))
-        vectors = embedding.embed_query('THIS IS A TEST OF THE EMBEDDINGS')
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,
-            chunk_overlap=100,
-            length_function=len,
-            is_separator_regex=False
-        )
-        # loader = TextLoader()
-        text_chunks = text_splitter.split_text('''In this video, we will go through how to sell a lot through the backhand. 
-                    Find the project you want to sell a lot for in the drop-down list, then select Active Siting. 
-                    
-                    Select the Search Lots drop-down. You can search for a lot by lot number, model name, elevation, or model type. Once you've selected your search criteria, select Search. 
-                    At the top of the page,  there is a legend which represents the icons used within the active sighting. You can only sell a lot with the available green checkmark symbol. 
-                    Select sell and if it's an individual or corporate sale. And enter in your password. You have option to add a note if you wish. Select the sell button. 
-                    The lot is now sold. The next step is to.  go back to the project menu and click on sales list. This is where you can see all the lots that have been sold. 
-                    The lot you just sold will be at the top of the list. 
-                    Click the sales sheet button. Here you can fill in all the required purchaser information and other relevant fields for the sale.  Thank you.''')
-        print(text_chunks[0])
-        # vector_store = PGVector(
-        #     embeddings=vectors,
-        #     collection_name=collection_name,
-        #     connection=connection,
-        #     use_jsonb=True,
-        # )
-        vetor_store = PGVector.from_texts(embedding=vectors,texts=text_chunks,collection_name=collection_name,connection=connection)
-        # vector_store.add_embeddings(embeddings=vectors,texts=text_chunks,)
+    def insert_embeddings_in_database(self,file_path):
+        #Load document with full text 
+        loader = TextLoader(file_path=file_path)
+        documents = loader.load()
         
+        #Divide text into chunks
+        
+        text_chunks = self.text_splitter.split_documents(documents=documents)
+        db = PGVector.from_documents(documents=text_chunks,embedding=self.ollamaEmbeddings,collection_name=self.collection_name,connection=self.connection)      
+        # query = 'how to purchase a house?'
+        # print(db.similarity_search_with_score(query=query,k=2))
     
+    def perform_similarity_search(self,prompt: str):
+        
+        db = PGVector(connection=self.connection, collection_name=self.collection_name,embeddings=self.ollamaEmbeddings)
+        
+        #Vectorize the prompt 
+        vectorized_prompt = self.ollamaEmbeddings.embed_query(prompt)
+        # return db.similarity_search_by_vector(embedding=vectorized_prompt,filter={"source": "G:\\AI\\ai_transcripts\\test.txt"})
+        return db.similarity_search_with_score(prompt)
+        
       
     def call_database(self):
         try:
@@ -93,6 +90,10 @@ class DBService:
     
 if __name__ == '__main__': 
     dbService = DBService()
-    dbService.insert_embeddings_in_database([1,2,3])
+    file_path = os.path.join(os.getcwd(),'test.txt')
+    dbService.insert_embeddings_in_database(file_path=file_path)
+    # similarity_search_result = dbService.perform_similarity_search(prompt='who are the potters')
+    # print(similarity_search_result)
+
     
     
