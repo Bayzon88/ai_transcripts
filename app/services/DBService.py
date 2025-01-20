@@ -6,6 +6,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 import psycopg2
 from dotenv import load_dotenv
 from langchain_ollama import OllamaEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_core.documents import Document
 from langchain_postgres import PGVector
 from langchain_postgres.vectorstores import PGVector
@@ -23,8 +24,9 @@ class DBService:
     user:str = os.getenv('user')
     password:str = os.getenv('password')
     connection: str = f'''postgresql+psycopg://{user}:{password}@{host}:5432/{database}'''  
-    collection_name : str = "my_docs"
+    collection_name : str = "openai_test"
     ollamaEmbeddings = OllamaEmbeddings(model=os.getenv('embedding_model'))
+    openAIEmbeddings = OpenAIEmbeddings(model=os.getenv('OPENAI_EMBED_MODEL'))
     text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=100,
@@ -59,18 +61,18 @@ class DBService:
         #Divide text into chunks
         
         text_chunks = self.text_splitter.split_documents(documents=documents)
-        db = PGVector.from_documents(documents=text_chunks,embedding=self.ollamaEmbeddings,collection_name=self.collection_name,connection=self.connection)      
+        db = PGVector.from_documents(documents=text_chunks,embedding=self.openAIEmbeddings,collection_name=self.collection_name,connection=self.connection)      
         # query = 'how to purchase a house?'
         # print(db.similarity_search_with_score(query=query,k=2))
     
     def perform_similarity_search(self,prompt: str):
         
-        db = PGVector(connection=self.connection, collection_name=self.collection_name,embeddings=self.ollamaEmbeddings)
+        db = PGVector(connection=self.connection, collection_name=self.collection_name,embeddings=self.openAIEmbeddings)
         
         #Vectorize the prompt 
-        vectorized_prompt = self.ollamaEmbeddings.embed_query(prompt)
+        vectorized_prompt = self.openAIEmbeddings.embed_query(prompt)
         # return db.similarity_search_by_vector(embedding=vectorized_prompt,filter={"source": "G:\\AI\\ai_transcripts\\test.txt"})
-        return db.similarity_search_with_score(prompt)
+        return db.similarity_search_with_score(prompt,k=20)
         
       
     def call_database(self):

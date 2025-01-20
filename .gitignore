@@ -5,3 +5,4 @@ venv/
 requirements.txt
 .dockerignore
 __pycache__/
+.env
