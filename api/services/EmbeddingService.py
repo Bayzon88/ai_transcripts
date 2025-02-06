@@ -30,8 +30,13 @@ class EmbeddingService:
     
        
 if __name__ == '__main__':
-    with open(os.path.join(os.getcwd(),'test.txt'), 'r') as file: 
-        text = file.read()
-        embeddingService = EmbeddingService(f'''{text}''')
-        embeddings = embeddingService.generate_transcript_embedding()
-        print(embeddings)
+    # with open(os.path.join(os.getcwd(),'test.txt'), 'r') as file: 
+    #     text = file.read()
+    #     embeddingService = EmbeddingService(f'''{text}''')
+    #     embeddings = embeddingService.generate_transcript_embedding()
+    #     print(embeddings)
+    
+    text = 'who is snape'
+    embedding_service = EmbeddingService(transcript=text)
+    vectorized_text = embedding_service.generate_transcript_embedding()
+    print(vectorized_text)

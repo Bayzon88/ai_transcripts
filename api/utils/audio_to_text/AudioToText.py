@@ -10,8 +10,8 @@ class AudioToText():
     def __init__(self):
         self.model = whisper.load_model("turbo")
         self.transcript : list[str]  = []   
-        self.audio_file_name = f'{os.getcwd()}\\utils\\video_to_audio\\extracted_audio.mp3'
-        self.audio_chunks_path_folder = f'{os.getcwd()}\\utils\\audio_to_text\\audio_chunks'
+        self.audio_file_name = f'{os.getcwd()}\\app\\utils\\video_to_audio\\extracted_audio.mp3'
+        self.audio_chunks_path_folder = f'{os.getcwd()}\\app\\utils\\audio_to_text\\audio_chunks'
 
     #Delete files in a folder
     def delete_files_in_folder(self):
@@ -70,7 +70,7 @@ class AudioToText():
     # Print the transcription
     def print_audio_transcription(self) -> str:
         today = date.today()
-        with open(f'{os.getcwd()}\\utils\\audio_to_text\\transcripts\\transcript_{today}.txt', 'w',encoding='utf-8') as file: 
+        with open(f'{os.getcwd()}\\app\\utils\\audio_to_text\\transcripts\\transcript_{today}.txt', 'w',encoding='utf-8') as file: 
             transcript_text = ' '.join(self.transcript)
             file.write(transcript_text) 
         self.delete_files_in_folder()

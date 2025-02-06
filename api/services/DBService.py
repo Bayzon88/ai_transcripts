@@ -70,7 +70,7 @@ class DBService:
         #Vectorize the prompt 
         vectorized_prompt = self.ollamaEmbeddings.embed_query(prompt)
         # return db.similarity_search_by_vector(embedding=vectorized_prompt,filter={"source": "G:\\AI\\ai_transcripts\\test.txt"})
-        return db.similarity_search_with_score(prompt)
+        return db.similarity_search_with_score(prompt, k=50)
         
       
     def call_database(self):
@@ -89,9 +89,10 @@ class DBService:
     
     
 if __name__ == '__main__': 
-    dbService = DBService()
-    file_path = os.path.join(os.getcwd(),'test.txt')
-    dbService.insert_embeddings_in_database(file_path=file_path)
+    pass
+    # dbService = DBService()
+    # file_path = os.path.join(os.getcwd(),'test.txt')
+    # dbService.insert_embeddings_in_database(file_path=file_path)
     # similarity_search_result = dbService.perform_similarity_search(prompt='who are the potters')
     # print(similarity_search_result)
 

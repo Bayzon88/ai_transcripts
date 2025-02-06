@@ -6,8 +6,8 @@
 
 - [x] Convert video into audio | :heavy_check_mark:
 - [x] Convert audio into text (STT)
-- [ ] Give text to LLM to summarize
-- [ ] Send summary to user
+- [x] Give text to LLM to summarize
+- [x] Send summary to user
 
 ## Nice to have
 
