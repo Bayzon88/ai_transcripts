@@ -9,7 +9,7 @@ class VideoToAudio():
         print(input_file_path)
         #Create Output filepath 
         name = os.path.basename(input_file_path) 
-        output_file_path = f'{os.getcwd()}\\api\\utils\\video_to_audio\\extracted_audio.mp3'
+        output_file_path = f'{os.getcwd()}\\utils\\video_to_audio\\extracted_audio.mp3'
         
         #Delete Existing file 
         self.delete_existing_audio_file(output_file_path)
